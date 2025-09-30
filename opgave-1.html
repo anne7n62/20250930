@@ -5,5 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
   </head>
-  <body></body>
+  <body>
+    <!-- Lav en side der viser et digitalt stopur med 1/100 sekund præcision med tilhørende start- og slutknap.
+         Opgaven udvides sådan at sidens baggrundsfarve ændres hvert sekund, 
+         og der slukkes for det hele hvis der ikke sker noget i 60 sekunder. -->
+
+    <p id="timer"></p>
+
+    <button id="start">Start stopur</button>
+    <button id="stop">Slut stopur</button>
+
+    <script>
+      const displayTimer = document.getElementById("timer");
+      const startBtn = document.getElementById("start");
+      const stopBtn = document.getElementById("stop");
+
+      let isRunning = false;
+      let startTime = 0;
+      let runningTime = 0;
+
+      document.getElementById("start").addEventListener("click", startTimer());
+    </script>
+  </body>
 </html>
