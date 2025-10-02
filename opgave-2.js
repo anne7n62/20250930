@@ -17,6 +17,19 @@ fs.readFile(sti, type, function callback(fejl, data) {
 
 console.log("Programmet fortsætter imens filen læses...");
 
+// RICHARDS LØSNING //
+// const fs = require("fs");
+// const sti = "sti_til_filen";
+// fs.readFile(sti, "utf8", callback);
+// function callback(fejl, data) {
+//   if (fejl) console.error("Fejl under fillæsningen: ", String(fejl));
+//   else {
+//     for (var i = 0, cntr = 0; i < data.length; i++)
+//       if (data[i].toLowerCase() !== data[i].toUpperCase()) cntr++;
+//     console.log(`Filen indeholder ${cntr} bogstaver`);
+//   }
+// }
+
 // Forklaring
 
 // fs.readFile(sti, type, callback):
