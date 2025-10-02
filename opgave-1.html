@@ -10,21 +10,114 @@
          Opgaven udvides sådan at sidens baggrundsfarve ændres hvert sekund, 
          og der slukkes for det hele hvis der ikke sker noget i 60 sekunder. -->
 
-    <p id="timer"></p>
-
-    <button id="start">Start stopur</button>
-    <button id="stop">Slut stopur</button>
+    <!-- Stopur med start-, stop- og reset-knap -->
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+    <button id="reset">Reset</button>
+    <h1 id="ur"></h1>
 
     <script>
-      const displayTimer = document.getElementById("timer");
-      const startBtn = document.getElementById("start");
-      const stopBtn = document.getElementById("stop");
+      // Henter referencer til HTML-elementer
+      const ur = document.getElementById("ur");
+      const baggrund = document.getElementsByTagName("body")[0];
+      const startknap = document.getElementById("start");
 
-      let isRunning = false;
-      let startTime = 0;
-      let runningTime = 0;
+      // Tilføjer event listeners til knapper
+      startknap.addEventListener("click", startUr);
+      document.getElementById("stop").addEventListener("click", stopUr);
+      document.getElementById("reset").addEventListener("click", nulStilUr);
 
-      document.getElementById("start").addEventListener("click", startTimer());
+      // Objekt til at gemme tidsenheder og variabler til setInterval/setTimeout ID’er
+      let tid = {},
+        updateUrID, // ID til stopurets interval
+        nødStopID; // ID til nødstop (60 sekunders inaktivitet)
+
+      // Starter baggrundsfarveskift hvert sekund
+      let skiftBaggrundsFarveID = setInterval(skiftBaggrundsFarve, 1000);
+
+      // Funktion: Start stopur
+      function startUr() {
+        // Hvis der ikke allerede er et interval kørende, starter vi ét
+        if (!updateUrID) updateUrID = setInterval(updateUr, 10); // hvert 10. ms (1/100 sekund)
+        resetNødStop(); // nulstil 60 sekunders timeout
+      }
+
+      // Funktion: Stop stopur
+      function stopUr() {
+        clearInterval(updateUrID); // sluk intervallet
+        updateUrID = undefined; // nulstil ID (så vi kan starte igen senere)
+        startknap.textContent = "Fortsæt"; // skift tekst på startknappen
+        resetNødStop(); // nulstil nødstop
+      }
+
+      // Funktion: Nulstil ur til 00:00:00
+      function nulStilUr() {
+        tid.hundEner = 0; // hundrededele (ener)
+        tid.hundTier = 0; // hundrededele (tier)
+        tid.sekEner = 0; // sekunder (ener)
+        tid.sekTier = 0; // sekunder (tier)
+        tid.minut = 0; // minutter
+        stopUr(); // stop uret
+        visUr(); // vis nulstillet ur
+        startknap.textContent = "Start"; // reset tekst på knap
+      }
+
+      // Funktion: Skift baggrundsfarve til en tilfældig RGB-farve
+      function skiftBaggrundsFarve() {
+        baggrund.style.backgroundColor = `rgb(${Math.random() * 255},${
+          Math.random() * 255
+        },${Math.random() * 255})`;
+      }
+
+      // Funktion: nulstil nødstop (60 sek timeout)
+      function resetNødStop() {
+        clearTimeout(nødStopID); // fjern evt. tidligere timeout
+        nødStopID = setTimeout(nødStop, 60000); // start ny timeout (60.000 ms = 60 sek)
+      }
+
+      // Funktion: nødstop → stopper baggrundsfarve og ur
+      function nødStop() {
+        clearInterval(skiftBaggrundsFarveID);
+        stopUr();
+      }
+
+      // Funktion: Opdater ur (bliver kaldt hvert 10. ms af setInterval)
+      function updateUr() {
+        tid.hundEner++; // øg hundrededele (ener)
+
+        // Når hundrededele når 10, reset og øg tier
+        if (tid.hundEner > 9) {
+          tid.hundEner = 0;
+          tid.hundTier++;
+
+          // Når hundrededele (tier) når 10, reset og øg sekunder (ener)
+          if (tid.hundTier > 9) {
+            tid.hundTier = 0;
+            tid.sekEner++;
+
+            // Når sekunder (ener) når 10, reset og øg sekunder (tier)
+            if (tid.sekEner > 9) {
+              tid.sekEner = 0;
+              tid.sekTier++;
+
+              // Når sekunder (tier) når 6 (dvs. 60 sek), reset og øg minutter
+              if (tid.sekTier > 5) {
+                tid.sekTier = 0;
+                tid.minut++;
+              }
+            }
+          }
+        }
+        visUr(); // opdater visning
+      }
+
+      // Funktion: Vis tiden på siden
+      function visUr() {
+        ur.innerHTML = `${tid.minut}:${tid.sekTier}${tid.sekEner}:${tid.hundTier}${tid.hundEner}`;
+      }
+
+      // Start med et nulstillet ur
+      nulStilUr();
     </script>
   </body>
 </html>
